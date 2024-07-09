@@ -1,52 +1,31 @@
 import React, { useState } from 'react';
-import axios from 'axios';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { loginUser } from '../Reducer/authReducer';
 import { Link } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
-import { login } from '../Reducer/authReducer.js';  // Import the login action
 import 'react-toastify/dist/ReactToastify.css';
 
 const LoginPage = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const dispatch = useDispatch();
+  const { loading, error,isAuthenticated } = useSelector((state) => state.auth);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-
-    // Validation (optional, add checks for empty fields)
-    if (!username || !password) {
+    if (!username|| !password) {
       toast.error('Please fill in all fields.');
       return;
     }
 
-    try {
-      const response = await axios.post('/api/users/login', {
-        emailOrUsername: username, // Send username only
-        password,
-      });
-
-      const data = response.data;
-      console.log(data.user);
-      console.log(JSON.stringify(data.user));
-      if (data) {
-        // Store tokens and login status in local storage
-        localStorage.setItem('accessToken', data.accessToken);
-        localStorage.setItem('refreshToken', data.refreshToken);
-        localStorage.setItem('isUserValid', 'true');
-        localStorage.setItem('user', JSON.stringify(data.user)); // Store user as a JSON string
-
-        // Dispatch login action with user data and token
-        dispatch(login({ user: data.user, token: data.accessToken }));
-        toast.success('Login successful!');
-        // Handle successful login (e.g., redirect to another page)
-      }
-    } catch (error) {
-      console.error('Error in login:', error);
-      toast.error('Login failed. Please try again.');
-      // Handle login error (e.g., display error message)
-    }
+    const userData = { emailOrUsername:username, password };
+    dispatch(loginUser(userData));
   };
+
+  // if(error){
+  //   return <h1>Error {error}</h1>
+  // }
+
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 py-12 px-4 sm:px-6 lg:px-8">
@@ -81,11 +60,14 @@ const LoginPage = () => {
             </div>
           </div>
           <div>
-            <button
+          <button
               type="submit"
-              className="w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              disabled={loading}
             >
-              Login
+               {loading ? 'Login ...' : isAuthenticated ? 'Login successfully' : 'Login'}
+            
+              
             </button>
           </div>
         </form>

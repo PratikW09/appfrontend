@@ -1,47 +1,34 @@
+
 import React, { useState } from 'react';
-import axios from 'axios';
+import { useDispatch, useSelector } from 'react-redux';
+import { registerUser } from '../Reducer/authReducer';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 const RegisterPage = () => {
-  const [loading, setLoading] = useState(false);
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [fullName, setFullName] = useState('');
   const [contact, setContact] = useState('');
   const [password, setPassword] = useState('');
 
+  const dispatch = useDispatch();
+  const { loading, error,isAuthenticated } = useSelector((state) => state.auth);
+
   const handleSubmit = async (event) => {
     event.preventDefault();
-    // Validation (optional, add checks for empty fields, email format, etc.)
     if (!username || !email || !fullName || !contact || !password) {
       toast.error('Please fill in all fields.');
       return;
     }
 
-    setLoading(true);
-
-    try {
-      const response = await axios.post('/api/users/register', {
-        username,
-        email,
-        fullName,
-        contact,
-        password,
-      });
-
-      const data = response.data;
-
-      if (data) {
-        toast.success('Registration successful!');
-      }
-    } catch (error) {
-      console.error('Error in register page:', error);
-      toast.error('Registration failed. Please try again later.',error.message);
-    }
-
-    setLoading(false);
+    const userData = { username, email, fullName, contact, password };
+    dispatch(registerUser(userData));
   };
+
+  if(error){
+    return <h1>Error {error}</h1>
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 py-12 px-4 sm:px-6 lg:px-8">
@@ -143,7 +130,9 @@ const RegisterPage = () => {
               className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
               disabled={loading}
             >
-              {loading ? 'Registering...' : 'Register'}
+               {loading ? 'Registering...' : isAuthenticated ? 'Registered successfully' : 'Register'}
+            
+              
             </button>
           </div>
         </form>

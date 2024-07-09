@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { useSelector, useDispatch } from 'react-redux';
-import axios from 'axios';
-import { logout } from '../Reducer/authReducer.js';
+import { useDispatch, useSelector } from 'react-redux';
+import { logoutUser } from '../Reducer/authReducer';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -14,21 +13,7 @@ const Navbar = () => {
   const dispatch = useDispatch();
 
   const handleLogout = async () => {
-    try {
-      await axios.post('/api/users/logout');
-      
-      // Remove tokens and user status from local storage
-      localStorage.removeItem('accessToken');
-      localStorage.removeItem('refreshToken');
-      localStorage.removeItem('isUserValid');
-      localStorage.removeItem('user');
-      
-      dispatch(logout());
-      toast.success('Logged out successfully');
-    } catch (error) {
-      console.error('Error during logout:', error);
-      toast.error('Logout failed. Please try again.');
-    }
+    dispatch(logoutUser());
   };
 
   return (
