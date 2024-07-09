@@ -1,28 +1,27 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchAllUserPosts } from '../Reducer/blogReducer.js';
 import BlogCard from '../components/BlogCard.jsx'; // Import the BlogCard component
 
 const AllUserPosts = () => {
-  const [posts, setPosts] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const dispatch = useDispatch();
+  const { userPosts, loading, error } = useSelector((state) => state.blog);
+  
 
   useEffect(() => {
-    const fetchUserPosts = async () => {
-      try {
-        const response = await axios.get('/api/users/getUserPost');
-        setPosts(response.data.posts);
-      } catch (error) {
-        console.error('Error fetching posts:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
+    
+      dispatch(fetchAllUserPosts());
+    
+  },[dispatch]);
 
-    fetchUserPosts();
-  }, []);
 
+  
   if (loading) {
     return <div>Loading...</div>;
+  }
+
+  if(error){
+    return <h1>Error from all user post page</h1>
   }
 
   return (
@@ -30,8 +29,8 @@ const AllUserPosts = () => {
       <div className="max-w-3xl mx-auto">
         <h1 className="text-3xl font-extrabold text-gray-900">All Posts</h1>
         <div className="mt-4 grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-1">
-          {posts.length > 0 ? (
-            posts.map(post => <BlogCard key={post._id} post={post} />)
+          {userPosts.length > 0 ? (
+            userPosts.map(post => <BlogCard key={post._id} post={post} />)
           ) : (
             <p className="text-gray-700">No posts found.</p>
           )}

@@ -1,33 +1,16 @@
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import { useSelector, useDispatch } from 'react-redux';
+import { fetchAllPosts } from '../Reducer/blogReducer';
 import BlogCard from '../components/BlogCard';
-import { useSelector } from 'react-redux';
 
 const LandingPage = () => {
-  const [posts, setPosts] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const user = useSelector((state) => state.auth.user);
-  const token = useSelector((state) => state.auth.token);
-  const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
-console.log("user->" ,user)
-console.log("token->" ,token)
-console.log("isAuthenticated->" ,isAuthenticated)
-
-
+  
+  const {posts,loading ,error} = useSelector((state) => state.blog);
+  const dispatch = useDispatch();
   useEffect(() => {
-    const fetchPosts = async () => {
-      try {
-        const response = await axios.get('/api/users/getAllPost');
-        setPosts(response.data.posts);
-      } catch (error) {
-        console.error('Error fetching posts:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchPosts();
-  }, []);
+      
+      dispatch(fetchAllPosts());
+  }, [ dispatch]);
 
   if (loading) {
     return <div>Loading...</div>;

@@ -44,6 +44,12 @@ export const logoutUser = createAsyncThunk(
   }
 );
 
+// Thunk to handle user freind list
+export const fetchFriendList = createAsyncThunk('friendList', async () => {
+  const response = await axios.get('/api/users/friends');
+  return response.data;
+});
+
 
 const initialState = {
   user: JSON.parse(localStorage.getItem('user')) || null,
@@ -51,8 +57,8 @@ const initialState = {
   loading: false,
   error: null,
   isAuthenticated: !!localStorage.getItem('isAuthenticated'),
-};
-
+  friends: [],
+}
 
 
 const authSlice = createSlice({
@@ -142,6 +148,17 @@ const authSlice = createSlice({
       .addCase(logoutUser.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
+      })
+      .addCase(fetchFriendList.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(fetchFriendList.fulfilled, (state, action) => {
+        state.loading = false;
+        state.friends = action.payload.friends;
+      })
+      .addCase(fetchFriendList.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.error.message;
       });
   },
 

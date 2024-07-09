@@ -1,30 +1,27 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-import axios from 'axios';
-import BlogCard from '../components/BlogCard.jsx';
+
 
 const Profile = () => {
-  const [posts, setPosts] = useState([]);
-  const [loading, setLoading] = useState(true);
+  
   const navigate = useNavigate();
-  const user = useSelector((state) => state.auth.user);
-  console.log("from ",user) // Get the user from the Redux store
+  const {user,loading} = useSelector((state) => state.auth);
 
-  useEffect(() => {
-    const fetchUserPosts = async () => {
-      try {
-        const postsResponse = await axios.get('/api/users/getUserPost');
-        setPosts(postsResponse.data.posts);
-      } catch (error) {
-        console.error('Error fetching posts:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
+  // useEffect(() => {
+  //   const fetchUserPosts = async () => {
+  //     try {
+  //       const postsResponse = await axios.get('/api/users/getUserPost');
+  //       setPosts(postsResponse.data.posts);
+  //     } catch (error) {
+  //       console.error('Error fetching posts:', error);
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   };
 
-    fetchUserPosts();
-  }, []);
+  //   fetchUserPosts();
+  // }, []);
 
   const handleViewAllFriends = () => {
     navigate('/friends');
