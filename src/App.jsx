@@ -14,15 +14,18 @@ import FriendRequests from './Pages/FriendsReqeust.jsx';
 import FriendsList from './Pages/FriendsList.jsx';
 import AllUserPosts from './Pages/AllUserPost.jsx';
 import { checkAuthenticate } from './Reducer/authReducer.js';
+import { likeArray } from './Reducer/likeReducer';
+import UpdatePost from './Pages/UpdatePost.jsx';
 
 function App() {
   const dispatch = useDispatch();
   const isAuthenticated = useSelector(state => state.auth.isAuthenticated);
-  console.log(isAuthenticated)
+  
 
   useEffect(() => {
     console.log("jii")
-    dispatch(checkAuthenticate());
+    dispatch(likeArray());
+    // dispatch(checkAuthenticate());
   }, [dispatch]);
 
   return (
@@ -38,6 +41,7 @@ function App() {
             <>
               <Route path="/SeperateBlogPage" element={<SeperateBlogPage />} />
               <Route path="/create" element={<CreatePost />} />
+              <Route path="/update" element={<UpdatePost />} />
               <Route path="/profile" element={<Profile />} />
               <Route path="/friend-req" element={<FriendRequests />} />
               <Route path="/friends" element={<FriendsList />} />

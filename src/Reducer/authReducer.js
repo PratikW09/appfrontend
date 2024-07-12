@@ -47,6 +47,7 @@ export const logoutUser = createAsyncThunk(
 // Thunk to handle user freind list
 export const fetchFriendList = createAsyncThunk('friendList', async () => {
   const response = await axios.get('/api/users/friends');
+  console.log(response.status)
   return response.data;
 });
 

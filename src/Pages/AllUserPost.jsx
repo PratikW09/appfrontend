@@ -20,9 +20,9 @@ const AllUserPosts = () => {
     return <div>Loading...</div>;
   }
 
-  if(error){
-    return <h1>Error from all user post page</h1>
-  }
+  // if(error){
+  //   return <h1>Error from all user post page</h1>
+  // }
 
   return (
     <div className="min-h-screen bg-gray-100 py-12 px-4 sm:px-6 lg:px-8">
