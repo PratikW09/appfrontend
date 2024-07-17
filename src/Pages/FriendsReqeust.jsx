@@ -1,60 +1,42 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
+import React, { useEffect } from 'react';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchFriendRequests, acceptFriendRequest, rejectFriendRequest } from '../Reducer/friendRequestReducer';
 
 const FriendRequests = () => {
-  const [friendRequests, setFriendRequests] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const dispatch = useDispatch();
+  const { pendingRequests, loading, error } = useSelector((state) => state.friendRequest);
 
-  useEffect(() => {
-    const fetchFriendRequests = async () => {
-      try {
-        const response = await axios.get('/api/users/friend-req');
-        setFriendRequests(response.data.requests);
-      } catch (error) {
-        console.error('Error fetching friend requests:', error.message);
-        toast.error('Error fetching friend requests. Please try again later.');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchFriendRequests();
-  }, []);
-
-  const handleAccept = async (requestId) => {
-    try {
-      // console.log(requestId)
-      const response = await axios.post(`/api/users/accept/${requestId}`);
-      if (response.status === 200) {
-        setFriendRequests(friendRequests.filter(request => request._id !== requestId));
+  const handleAccept = (requestId) => {
+    dispatch(acceptFriendRequest(requestId)).then((action) => {
+      if (acceptFriendRequest.fulfilled.match(action)) {
         toast.success('Friend request accepted successfully!');
+      } else {
+        toast.error('Error accepting friend request. Please try again later.');
       }
-    } catch (error) {
-      console.error('Error accepting friend request:', error);
-      toast.error('Error accepting friend request. Please try again later.');
-    }
+    });
   };
 
-  const handleReject = async (requestId) => {
-    try {
-      const response = await axios.post(`/api/users/reject/${requestId}`);
-      if (response.status === 200) {
-        setFriendRequests(friendRequests.filter(request => request._id !== requestId));
+  const handleReject = (requestId) => {
+    dispatch(rejectFriendRequest(requestId)).then((action) => {
+      if (rejectFriendRequest.fulfilled.match(action)) {
         toast.success('Friend request rejected successfully!');
+      } else {
+        toast.error('Error rejecting friend request. Please try again later.');
       }
-    } catch (error) {
-      console.error('Error rejecting friend request:', error);
-      toast.error('Error rejecting friend request. Please try again later.');
-    }
+    });
   };
 
   if (loading) {
     return <div className="text-center py-4">Loading...</div>;
   }
 
-  if (friendRequests.length === 0) {
+  if (error) {
+    return <div className="text-center py-4">Error fetching friend requests. Please try again later.</div>;
+  }
+
+  if (pendingRequests.length === 0) {
     return <div className="text-center py-4">No friend requests found.</div>;
   }
 
@@ -62,7 +44,7 @@ const FriendRequests = () => {
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-2xl font-bold text-center mb-6">Friend Requests</h1>
       <div className="max-w-3xl mx-auto bg-white shadow-md rounded-lg p-6">
-        {friendRequests.map((request) => (
+        {pendingRequests.map((request) => (
           <div key={request._id} className="mb-4 p-4 bg-gray-100 rounded-lg flex justify-between items-center">
             <p className="text-gray-700">
               <span className="font-bold">{request.sender.username}</span> ({request.sender.email})

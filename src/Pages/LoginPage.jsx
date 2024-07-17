@@ -19,6 +19,7 @@ const LoginPage = () => {
     }
 
     const userData = { emailOrUsername:username, password };
+    console.log("h i am login")
     dispatch(loginUser(userData));
   };
 

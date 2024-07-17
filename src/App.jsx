@@ -13,23 +13,26 @@ import Profile from './Pages/ProfilePage.jsx';
 import FriendRequests from './Pages/FriendsReqeust.jsx';
 import FriendsList from './Pages/FriendsList.jsx';
 import AllUserPosts from './Pages/AllUserPost.jsx';
-import { checkAuthenticate } from './Reducer/authReducer.js';
 import { likeArray } from './Reducer/likeReducer';
 import UpdatePost from './Pages/UpdatePost.jsx';
+import { fetchFriendRequests } from '../src/Reducer/friendRequestReducer.js';
+
 
 function App() {
   const dispatch = useDispatch();
-  const isAuthenticated = useSelector(state => state.auth.isAuthenticated);
+  const {isAuthenticated} = useSelector(state => state.auth);
   
 
   useEffect(() => {
-    console.log("jii")
-    dispatch(likeArray());
-    // dispatch(checkAuthenticate());
+    if(isAuthenticated){
+      dispatch(fetchFriendRequests());
+      dispatch(likeArray())
+
+    }
   }, [dispatch]);
 
   return (
-    <div className="min-h-screen flex flex-col border-4 items-center justify-center bg-white dark:bg-gray-900 text-black dark:text-white">
+    <div className="min-h-screen flex flex-col  items-center justify-center bg-white  text-black dark:text-white dark:bg-black">
       <Router>
         <Navbar />
         <Routes>
